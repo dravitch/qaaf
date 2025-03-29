@@ -22,7 +22,8 @@ qaaf/
 │   └── robustness.py       # Tests de robustesse
 ├── data/
 │   ├── __init__.py
-│   └── data_manager.py     # Gestion des données
+│   ├── data_manager.py     # Gestion des données
+│   └── synthetic_data.py   # Générateur de données synthétiques pour tests
 ├── utils/
 │   ├── __init__.py
 │   ├── gpu_utils.py        # Utilitaires pour GPU
@@ -30,6 +31,14 @@ qaaf/
 ├── core/
 │   ├── __init__.py
 │   └── qaaf_core.py        # Orchestration des composants
+├── tests/
+│   ├── __init__.py
+│   ├── test_metrics.py
+│   ├── test_market_phase.py
+│   ├── test_allocation.py
+│   ├── test_transaction.py
+│   ├── test_data_manager.py
+│   └── test_integration.py
 └── docs/
     ├── architecture.md     # Documentation de l'architecture
     ├── metrics.md          # Documentation des métriques
