@@ -24,6 +24,7 @@ ENV/
 
 # Data files
 doc/origins
+doc/articles
 doc/plan-a
 data/historical/*.csv
 data/results/*.csv

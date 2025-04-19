@@ -623,7 +623,7 @@ class QAAFCore:
 
             logger.info ("Configuration des composants selon les paramètres optimaux terminée")
 
-'''
+        '''
     # Fonction pour exécuter dans Google Colab
     def run_qaaf (optimize_metrics: bool = True,optimize_threshold: bool = True):
         """Exécute le framework QAAF dans Google Colab"""
@@ -632,7 +632,8 @@ class QAAFCore:
         print ("=" * 70)
         print ("Ajout d'un module d'optimisation avancé des métriques et des frais")
         print ("Identification de combinaisons optimales selon différents profils de risque/rendement")
-'''
+        '''
+
     def run_qaaf (optimize_metrics: bool = True,
                   optimize_threshold: bool = True,
                   run_validation: bool = True,
