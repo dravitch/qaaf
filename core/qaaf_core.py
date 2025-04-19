@@ -8,7 +8,7 @@ from typing import Dict,List,Optional,Tuple,Union
 import logging
 import time
 
-from qaaf.metrics.calculator import MetricsCalculator
+from metrics.calculator import MetricsCalculator
 
 # Import des autres modules au fur et à mesure de leur création
 
