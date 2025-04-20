@@ -3,8 +3,9 @@ Module d'utilitaires pour l'utilisation du GPU dans QAAF.
 Fournit des fonctions pour détecter et utiliser le GPU lorsque disponible.
 """
 
-import logging
 import numpy as np
+import warnings
+import logging
 from typing import Any,Union,Tuple
 
 # Configuration du logging
@@ -14,6 +15,25 @@ logger=logging.getLogger (__name__)
 GPU_AVAILABLE=False
 GPU_MODULE=None
 
+# Essayer d'importer CuPy, mais gérer proprement son absence ou ses problèmes
+try:
+    import cupy as cp
+
+    # Vérifier si CuPy fonctionne correctement
+    try:
+        # Test simple pour voir si CuPy fonctionne
+        test_array=cp.array ([1,2,3])
+        test_result=cp.sum (test_array)
+        del test_array,test_result
+        GPU_AVAILABLE=True
+    except Exception as e:
+        GPU_AVAILABLE=False
+        logger.warning (f"CuPy est installé mais ne fonctionne pas correctement: {str (e)}")
+        logger.warning ("L'accélération GPU a été désactivée.")
+except ImportError:
+    cp=None
+    GPU_AVAILABLE=False
+    logger.info ("CuPy n'est pas installé. L'accélération GPU n'est pas disponible.")
 
 def initialize_gpu_support () -> bool:
     """
@@ -61,21 +81,6 @@ def initialize_gpu_support () -> bool:
 
     logger.info ("Support GPU non disponible, utilisation de NumPy sur CPU")
     return False
-
-
-def get_array_module ():
-    """
-    Retourne le module à utiliser pour les calculs (NumPy ou module GPU).
-
-    Returns:
-        module: NumPy ou le module GPU (CuPy ou PyTorch) si disponible
-    """
-    global GPU_AVAILABLE,GPU_MODULE
-
-    if not GPU_AVAILABLE:
-        return np
-
-    return GPU_MODULE
 
 
 def to_device (data: Any,use_gpu: bool = None) -> Any:
@@ -183,7 +188,24 @@ def clear_memory () -> None:
 
 
 # Initialisation automatique au chargement du module
-initialize_gpu_support ()
+
+def initialize_gpu_support ():
+    """Initialise et vérifie le support GPU."""
+    if not GPU_AVAILABLE:
+        warnings.warn (
+            "L'accélération GPU n'est pas disponible. "
+            "Pour l'activer, installez correctement CuPy: https://docs.cupy.dev/en/stable/install.html"
+        )
+    return GPU_AVAILABLE
 
 # Interface simplifiée pour l'utilisation
+def get_array_module (use_gpu=None):
+    """Retourne le module à utiliser pour les calculs (NumPy ou CuPy)."""
+    if use_gpu is None:
+        use_gpu=GPU_AVAILABLE
+    else:
+        use_gpu=use_gpu and GPU_AVAILABLE
+
+    return cp if use_gpu and GPU_AVAILABLE else np
+
 xp=get_array_module ()

@@ -8,7 +8,7 @@ from typing import Dict,List,Optional,Tuple,Union
 import logging
 import time
 
-from metrics.calculator import MetricsCalculator
+from qaaf.metrics.calculator import MetricsCalculator
 
 # Import des autres modules au fur et à mesure de leur création
 
@@ -53,9 +53,6 @@ class QAAFCore:
         self.end_date=end_date
         self.use_gpu=use_gpu
 
-        # Initialisation des composants
-        self.metrics_calculator=MetricsCalculator (use_gpu=use_gpu)
-
         # Ici, ajoutez les autres initialisations (data_manager, market_phase_analyzer, etc.)
         # à mesure que les modules sont créés
         from qaaf.data.data_manager import DataManager
@@ -65,8 +62,9 @@ class QAAFCore:
         from qaaf.transaction.fees_evaluator import TransactionFeesEvaluator
         from qaaf.transaction.backtester import QAAFBacktester
 
+        # Initialisation des composants
         self.data_manager=DataManager ()
-        self.metrics_calculator=MetricsCalculator ()
+        self.metrics_calculator=MetricsCalculator (use_gpu=use_gpu)
         self.market_phase_analyzer=MarketPhaseAnalyzer ()
         self.adaptive_allocator=AdaptiveAllocator (
             min_btc_allocation=allocation_min,

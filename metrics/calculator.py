@@ -1,10 +1,14 @@
 """
 Module de calcul des métriques fondamentales QAAF
 """
+# Dans qaaf/metrics/calculator.py
 
 import pandas as pd
 import numpy as np
 from typing import Dict,Optional,Tuple
+
+# Dans MetricsCalculator ou d'autres classes qui utilisent GPU
+from qaaf.utils.gpu_utils import get_array_module, GPU_AVAILABLE
 
 # Tentative d'importation de CuPy pour l'accélération GPU
 try:
@@ -39,18 +43,26 @@ class MetricsCalculator:
             volatility_window: Fenêtre pour le calcul de la volatilité
             spectral_window: Fenêtre pour le calcul des composantes spectrales
             min_periods: Nombre minimum de périodes pour les calculs
-            use_gpu: Utiliser le GPU si disponible (None pour auto-détection)
+            use_gpu: Si True, utilise le GPU si disponible. Si None, détecte automatiquement.
         """
+        # Imports nécessaires
+        import numpy as np
+        from qaaf.utils.gpu_utils import GPU_AVAILABLE
+
+        # Paramètres de base
         self.volatility_window=volatility_window
         self.spectral_window=spectral_window
         self.min_periods=min_periods
 
         # Configuration GPU
         self.use_gpu=GPU_AVAILABLE if use_gpu is None else (use_gpu and GPU_AVAILABLE)
-        self.xp=cp if self.use_gpu else np
 
         if self.use_gpu:
+            import cupy as cp
+            self.xp=cp
             print ("GPU acceleration enabled for metrics calculation")
+        else:
+            self.xp=np
 
     def update_parameters (self,
                            volatility_window: Optional[int] = None,
