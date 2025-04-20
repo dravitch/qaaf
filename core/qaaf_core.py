@@ -58,6 +58,33 @@ class QAAFCore:
 
         # Ici, ajoutez les autres initialisations (data_manager, market_phase_analyzer, etc.)
         # à mesure que les modules sont créés
+        from qaaf.data.data_manager import DataManager
+        from qaaf.metrics.calculator import MetricsCalculator
+        from qaaf.market.phase_analyzer import MarketPhaseAnalyzer
+        from qaaf.allocation.adaptive_allocator import AdaptiveAllocator
+        from qaaf.transaction.fees_evaluator import TransactionFeesEvaluator
+        from qaaf.transaction.backtester import QAAFBacktester
+
+        self.data_manager=DataManager ()
+        self.metrics_calculator=MetricsCalculator ()
+        self.market_phase_analyzer=MarketPhaseAnalyzer ()
+        self.adaptive_allocator=AdaptiveAllocator (
+            min_btc_allocation=allocation_min,
+            max_btc_allocation=allocation_max,
+            neutral_allocation=0.5,
+            sensitivity=1.0
+        )
+        self.fees_evaluator=TransactionFeesEvaluator (base_fee_rate=trading_costs)
+        self.backtester=QAAFBacktester (
+            initial_capital=initial_capital,
+            fees_evaluator=self.fees_evaluator,
+            rebalance_threshold=0.05
+        )
+
+        # Ces composants seront initialisés après le chargement des données
+        self.optimizer=None
+        self.validator=None
+        self.robustness_tester=None
 
         # Stockage des résultats
         self.data=None
@@ -68,6 +95,8 @@ class QAAFCore:
         self.performance=None
         self.results=None
         self.optimization_results=None
+        self.validation_results=None
+        self.robustness_results=None
 
         def load_data (self,start_date: Optional[str] = None,end_date: Optional[str] = None) -> Dict[str,pd.DataFrame]:
             """
@@ -88,7 +117,11 @@ class QAAFCore:
             # Chargement des données via le DataManager
             self.data=self.data_manager.prepare_qaaf_data (_start_date,_end_date)
 
-            # NOUVEAU: Initialisation des modules qui nécessitent les données
+            # Initialisation des modules qui nécessitent les données
+            from qaaf.optimization.grid_search import QAAFOptimizer
+            from qaaf.validation.out_of_sample import OutOfSampleValidator
+            from qaaf.validation.robustness import RobustnessTester
+
             self.optimizer=QAAFOptimizer (
                 data=self.data,
                 metrics_calculator=self.metrics_calculator,
@@ -118,7 +151,8 @@ class QAAFCore:
                 Série des phases de marché
             """
             if self.data is None:
-                raise ValueError ("Aucune donnée chargée. Appelez load_data() d'abord.")
+                raise ValueError (
+                    "Aucune donnée chargée. Appelez load_data() ou affectez directement des données à qaaf.data.")
 
             logger.info ("Analyse des phases de marché")
 
@@ -135,7 +169,8 @@ class QAAFCore:
                 Dictionnaire des métriques calculées
             """
             if self.data is None:
-                raise ValueError ("Aucune donnée chargée. Appelez load_data() d'abord.")
+                raise ValueError (
+                    "Aucune donnée chargée. Appelez load_data() ou affectez directement des données à qaaf.data.")
 
             logger.info ("Calcul des métriques QAAF")
 

@@ -76,7 +76,29 @@ qaaf.print_summary()
 # Visualize results
 qaaf.visualize_results()
 ```
+## Utilisation basique
 
+```python
+from qaaf.core.qaaf_core import QAAFCore
+
+# 1. Initialisation
+qaaf = QAAFCore()
+
+# 2. Méthode 1: Utiliser load_data() pour charger les données de Yahoo Finance
+qaaf.load_data()
+
+# 2. Méthode 2: Assigner directement des données
+# qaaf.data = votre_dictionnaire_de_données  # {'BTC': df_btc, 'PAXG': df_paxg, 'PAXG/BTC': df_ratio}
+
+# 3. Analyser les phases de marché (nécessite des données)
+qaaf.analyze_market_phases()
+
+# 4. Suite du workflow...
+qaaf.calculate_metrics()
+qaaf.calculate_composite_score()
+qaaf.calculate_adaptive_allocations()
+qaaf.run_backtest()
+```
 ## Documentation
 Detailed documentation is available in the docs/ directory:
 
