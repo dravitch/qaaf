@@ -99,6 +99,13 @@ qaaf.calculate_composite_score()
 qaaf.calculate_adaptive_allocations()
 qaaf.run_backtest()
 ```
+## Support GPU et dépendances
+
+QAAF peut utiliser l'accélération GPU via CuPy pour les calculs intensifs. Si vous rencontrez des problèmes avec l'installation de CuPy, vous pouvez exécuter:
+
+```bash
+python -m qaaf.utils.setup_environment
+```
 ## Documentation
 Detailed documentation is available in the docs/ directory:
 
