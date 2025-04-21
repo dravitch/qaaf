@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from qaaf.core.qaaf_core import QAAFCore
 
-
 # Fixture pour créer des données synthétiques pour les tests
 @pytest.fixture
 def synthetic_data ():
@@ -42,7 +41,6 @@ def synthetic_data ():
         'PAXG':paxg_data,
         'PAXG/BTC':paxg_btc_data
     }
-
 
 # Test d'initialisation
 def test_qaaf_core_init ():

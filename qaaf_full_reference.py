@@ -4348,7 +4348,7 @@ def run_qaaf(optimize_metrics: bool = True,
 
 # Point d'entrée principal (utiliser cette version dans Colab)
 if __name__ == "__main__":
-    # Version Economie de ressources    
+    # Version Economie de ressources
     qaaf, results = run_qaaf(
         optimize_metrics=True,
         optimize_threshold=False,  # Désactiver pour économiser la mémoire
@@ -4356,7 +4356,7 @@ if __name__ == "__main__":
         profile='balanced',
         verbose=False              # Réduire les logs
     )
-'''
+    '''
     # Version simplifiée qui fonctionne dans Colab
     qaaf, results = run_qaaf(
         optimize_metrics=True,
@@ -4365,7 +4365,8 @@ if __name__ == "__main__":
         profile='balanced',
         verbose=True
     )
-'''
+    '''
     # Visualisation des résultats
     if qaaf is not None:
-        qaaf.visualize_results()
+      qaaf.visualize_results()
+
