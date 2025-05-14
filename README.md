@@ -38,7 +38,7 @@ QAAF is built with a modular architecture:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/qaaf-project.git
+git clone https://github.com/dravitch/qaaf.git
 cd qaaf-project
 
 # Create a virtual environment (optional but recommended)
