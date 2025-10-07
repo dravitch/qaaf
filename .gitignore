@@ -23,13 +23,17 @@ ENV/
 .ipynb_checkpoints
 
 # Data files
-doc/origins
-doc/articles
-doc/plan-a
+doc/2026/
+doc/origins/
+doc/articles/
+doc/plan-a/
 data/historical/*.csv
 data/results/*.csv
 *.db
 *.sqlite
+check.py
+test.py
+save.py
 
 # Logs
 logs/

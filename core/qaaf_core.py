@@ -7,6 +7,8 @@ import numpy as np
 from typing import Dict,List,Optional,Tuple,Union
 import logging
 import time
+from datetime import datetime
+import matplotlib.pyplot as plt
 
 from qaaf.metrics.calculator import MetricsCalculator
 
@@ -656,88 +658,9 @@ class QAAFCore:
 
         logger.info ("Configuration des composants selon les paramètres optimaux terminée")
 
-        '''
-    # Fonction pour exécuter dans Google Colab
-    def run_qaaf (optimize_metrics: bool = True,optimize_threshold: bool = True):
-        """Exécute le framework QAAF dans Google Colab"""
+'''
+    # def run_qaaf
 
-        print ("\n🔹 QAAF (Quantitative Algorithmic Asset Framework) - Version 1.0.8 🔹")
-        print ("=" * 70)
-        print ("Ajout d'un module d'optimisation avancé des métriques et des frais")
-        print ("Identification de combinaisons optimales selon différents profils de risque/rendement")
-        '''
-
-    def run_qaaf (optimize_metrics: bool = True,
-                  optimize_threshold: bool = True,
-                  run_validation: bool = True,
-                  profile: str = 'balanced',
-                  verbose: bool = True):
-
-        """
-        Fonction principale d'exécution de QAAF 1.0.0 adaptée pour Google Colab
-        """
-        # Configuration du niveau de logging
-        if verbose:
-            logging.getLogger ().setLevel (logging.INFO)
-        else:
-            logging.getLogger ().setLevel (logging.WARNING)
-
-        print ("\n�� QAAF (Quantitative Algorithmic Asset Framework) - Version 1.0.0 🔹")
-        print ("=" * 70)
-        print ("Framework avancé d'analyse et trading algorithmique avec moteur d'optimisation efficace")
-        print ("Intégration de validation out-of-sample et tests de robustesse")
-
-        # Configuration
-        initial_capital=30000.0
-        start_date='2020-01-01'
-        end_date='2024-12-31'
-        trading_costs=0.001  # 0.1% (10 points de base)
-
-        print (f"\nConfiguration:")
-        print (f"- Capital initial: ${initial_capital:,.2f}")
-        print (f"- Période d'analyse: {start_date} à {end_date}")
-        print (f"- Frais de transaction: {trading_costs:.2%}")
-        print (f"- Profil d'optimisation: {profile}")
-        print (f"- Optimisation des métriques: {'Oui' if optimize_metrics else 'Non'}")
-        print (f"- Optimisation du seuil de rebalancement: {'Oui' if optimize_threshold else 'Non'}")
-        print (f"- Validation out-of-sample: {'Oui' if run_validation else 'Non'}")
-
-        # Initialisation
-        qaaf=QAAFCore (
-            initial_capital=initial_capital,
-            trading_costs=trading_costs,
-            start_date=start_date,
-            end_date=end_date,
-            allocation_min=0.1,  # Bornes d'allocation élargies
-            allocation_max=0.9
-        )
-
-        # Exécution de l'analyse complète
-        print ("\n📊 Démarrage de l'analyse...\n")
-
-        try:
-            results=qaaf.run_full_analysis (
-                optimize_metrics=optimize_metrics,
-                optimize_threshold=optimize_threshold,
-                run_validation=run_validation,
-                profile=profile
-            )
-
-            # Génération et affichage d'un rapport de recommandation
-            if optimize_metrics and qaaf.optimizer:
-                print ("\n📋 Rapport de recommandation:\n")
-                recommendation_report=qaaf.optimizer.generate_recommendation_report ()
-                print (recommendation_report)
-
-            print ("\n✅ Analyse complétée avec succès!")
-            return qaaf,results
-
-        except Exception as e:
-            print (f"\n❌ Erreur lors de l'analyse: {str (e)}")
-            if verbose:
-                import traceback
-                traceback.print_exc ()
-            return None,None
 
     # Ajouter ici les méthodes principales:
     # - load_data
@@ -751,35 +674,4 @@ class QAAFCore:
     # - run_full_analysis
     # - print_summary
     # - visualize_results
-
-    def print_summary (self):
-        """
-        Affiche un résumé des résultats
-        """
-        if self.results is None:
-            logger.warning ("Aucun résultat disponible. Appelez run_backtest() d'abord.")
-            return
-
-        print ("\n=== Résumé des Résultats QAAF ===")
-        print (f"Date: {time.strftime ('%Y-%m-%d %H:%M:%S')}")
-        print (f"Période: {self.start_date} à {self.end_date}")
-
-        # Métriques de performance
-        metrics=self.results.get ('metrics',{})
-        print (f"\nCapital Initial: ${self.initial_capital:,.2f}")
-        print (f"Valeur Finale: ${metrics.get ('final_value',0):,.2f}")
-        print (f"Rendement Total: {metrics.get ('total_return',0):,.2f}%")
-        print (f"Volatilité: {metrics.get ('volatility',0):,.2f}%")
-        print (f"Ratio de Sharpe: {metrics.get ('sharpe_ratio',0):,.2f}")
-        print (f"Drawdown Maximum: {metrics.get ('max_drawdown',0):,.2f}%")
-
-        # Calculer le ratio rendement/drawdown si disponible
-        if metrics.get ('max_drawdown',0) != 0:
-            r_d_ratio=metrics.get ('total_return',0) / abs (metrics.get ('max_drawdown',0))
-            print (f"Ratio Rendement/Drawdown: {r_d_ratio:,.2f}")
-
-        # Informations sur les frais
-        if 'total_fees' in metrics:
-            fee_drag=metrics.get ('total_fees',0) / metrics.get ('final_value',1) * 100
-            print (f"\nFrais de Transaction Totaux: ${metrics.get ('total_fees',0):,.2f}")
-            print (f"Impact des Frais sur la Performance: {fee_drag:,.2f}%")
+'''
