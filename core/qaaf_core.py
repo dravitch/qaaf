@@ -1,7 +1,6 @@
 """
 Module principal du framework QAAF
 """
-
 import pandas as pd
 import numpy as np
 from typing import Dict,List,Optional,Tuple,Union
@@ -97,6 +96,7 @@ class QAAFCore:
         self.optimization_results=None
         self.validation_results=None
         self.robustness_results=None
+        self.adaptive_allocations = self.allocations
 
     def load_data (self,start_date: Optional[str] = None,end_date: Optional[str] = None) -> Dict[str,pd.DataFrame]:
         """
@@ -117,29 +117,35 @@ class QAAFCore:
         # Chargement des données via le DataManager
         self.data=self.data_manager.prepare_qaaf_data (_start_date,_end_date)
 
+    # ========================================
+    # DÉSACTIVÉ TEMPORAIREMENT - Optimiseur non utilisé en v1.1
+    # ========================================
+
         # Initialisation des modules qui nécessitent les données
-        from qaaf.optimization.grid_search import QAAFOptimizer
-        from qaaf.validation.out_of_sample import OutOfSampleValidator
-        from qaaf.validation.robustness import RobustnessTester
+    #    from qaaf.optimization.grid_search import GridSearchOptimizer
+    #    from qaaf.validation.out_of_sample import OutOfSampleValidator
+    #    from qaaf.validation.robustness import RobustnessTester
+#
+#       QAAFOptimizer = GridSearchOptimizer
+#
+#        self.optimizer=QAAFOptimizer (
+#            data=self.data,
+#           metrics_calculator=self.metrics_calculator,
+#            market_phase_analyzer=self.market_phase_analyzer,
+#            adaptive_allocator=self.adaptive_allocator,
+#            backtester=self.backtester,
+#            initial_capital=self.initial_capital
+#        )
 
-        self.optimizer=QAAFOptimizer (
-            data=self.data,
-            metrics_calculator=self.metrics_calculator,
-            market_phase_analyzer=self.market_phase_analyzer,
-            adaptive_allocator=self.adaptive_allocator,
-            backtester=self.backtester,
-            initial_capital=self.initial_capital
-        )
+#        self.validator=OutOfSampleValidator (
+#            qaaf_core=self,
+#            data=self.data
+#        )
 
-        self.validator=OutOfSampleValidator (
-            qaaf_core=self,
-            data=self.data
-        )
-
-        self.robustness_tester=RobustnessTester (
-            qaaf_core=self,
-            data=self.data
-        )
+#        self.robustness_tester=RobustnessTester (
+#            qaaf_core=self,
+#            data=self.data
+#        )
 
         return self.data
 
@@ -229,11 +235,15 @@ class QAAFCore:
 
         logger.info ("Calcul des allocations adaptatives")
 
-        # Calcul des allocations via l'AdaptiveAllocator
-        self.allocations=self.adaptive_allocator.calculate_adaptive_allocation (
+        self.allocations = self.adaptive_allocator.calculate_adaptive_allocation(
             self.composite_score,
             self.market_phases
         )
+
+        # alias rétrocompatible : certaines parties du code utilisaient
+        # self.adaptive_allocations ; garder cet alias pour compatibilité
+        # et éviter NameError si un ancien nom est référencé ailleurs.
+        self.adaptive_allocations = self.allocations
 
         return self.allocations
 
@@ -264,6 +274,10 @@ class QAAFCore:
             'metrics':metrics,
             'comparison':comparison
         }
+        # alias rétrocompatible attendu par certains tests/scripts
+        self.metrics_result = metrics
+        # garder self.metrics synchronisé
+        self.metrics = metrics
 
         return self.results
 

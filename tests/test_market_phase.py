@@ -98,7 +98,14 @@ class TestMarketPhaseAnalyzer (unittest.TestCase):
                 self.assertIn ('max',stats)
                 self.assertIn ('median',stats)
 
-    def test_window_parameters (self):
+    def test_window_parameters(self):
         # Tester avec différentes tailles de fenêtre
-        analyzer_small=MarketPhaseAnalyzer (short_window=3,long_window=6,volatility_window=3)
-        analyzer_large=MarketPhaseAnalyzer (short_window=1
+        analyzer_small = MarketPhaseAnalyzer(short_window=3, long_window=6, volatility_window=3)
+        analyzer_large = MarketPhaseAnalyzer(short_window=10, long_window=20, volatility_window=5)
+        analyzer = MarketPhaseAnalyzer(short_window=3, long_window=6, volatility_window=3)
+        # Vérification que les objets sont bien créés
+        assert analyzer.short_window == 3
+        assert analyzer.long_window == 6
+        assert analyzer.volatility_window == 3
+        assert analyzer_small.short_window == 3
+        assert analyzer_large.short_window == 10

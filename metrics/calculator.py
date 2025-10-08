@@ -6,6 +6,9 @@ Module de calcul des métriques fondamentales QAAF
 import pandas as pd
 import numpy as np
 from typing import Dict,Optional,Tuple
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Dans MetricsCalculator ou d'autres classes qui utilisent GPU
 from qaaf.utils.gpu_utils import get_array_module, GPU_AVAILABLE

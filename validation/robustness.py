@@ -712,46 +712,114 @@ class RobustnessTester:
                 'stability':1.0 / (1.0 + test_cv) if test_cv < float ('inf') else 0.0
             }
 
+def _analyze_cv_results(self, cv_results: List[Dict]) -> Dict:
+    """
+    Analyse les résultats de la validation croisée.
+
+    Args:
+        cv_results: Résultats de la validation croisée
+
+    Returns:
+        Analyse des résultats
+    """
+    if not cv_results:
+        return {}
+
+    analysis = {'metrics': {}}
+
+    # Pour chaque métrique
+    for metric in self.metric_keys:
+        train_values = [
+            r['train_metrics'].get(metric) 
+            for r in cv_results 
+            if 'train_metrics' in r and metric in r['train_metrics']
+        ]
+        test_values = [
+            r['test_metrics'].get(metric) 
+            for r in cv_results 
+            if 'test_metrics' in r and metric in r['test_metrics']
+        ]
+
+        if train_values and test_values and len(train_values) == len(test_values):
+            # Calcul des statistiques pour les données d'entraînement
+            train_mean = np.mean(train_values)
+            train_std = np.std(train_values)
+            train_min = np.min(train_values)
+            train_max = np.max(train_values)
+
+            # Calcul des statistiques pour les données de test
+            test_mean = np.mean(test_values)
+            test_std = np.std(test_values)
+            test_min = np.min(test_values)
+            test_max = np.max(test_values)
+
+            # Calcul des ratios test/train
+            if train_mean != 0:
+                ratio = test_mean / train_mean
+            else:
+                ratio = float('inf')
+
+            # Calcul de la stabilité (coefficient de variation)
+            train_cv = train_std / abs(train_mean) if train_mean != 0 else float('inf')
+            test_cv = test_std / abs(test_mean) if test_mean != 0 else float('inf')
+
+            analysis['metrics'][metric] = {
+                'train': {
+                    'mean': train_mean,
+                    'std': train_std,
+                    'cv': train_cv,
+                    'min': train_min,
+                    'max': train_max
+                },
+                'test': {
+                    'mean': test_mean,
+                    'std': test_std,
+                    'cv': test_cv,
+                    'min': test_min,
+                    'max': test_max
+                },
+                'ratio': ratio,
+                'stability': 1.0 / (1.0 + test_cv) if test_cv < float('inf') else 0.0
+            }
+
     # Calcul du score global de robustesse
+    stability_scores = [
+        analysis['metrics'][m]['stability']
+        for m in analysis['metrics']
+        if 'stability' in analysis['metrics'][m]
+    ]
 
+    # Pondération des ratios test/train
+    ratio_scores = []
+    for metric in analysis['metrics']:
+        if 'ratio' in analysis['metrics'][metric]:
+            ratio = analysis['metrics'][metric]['ratio']
 
-stability_scores=[
-    analysis['metrics'][m]['stability']
-    for m in analysis['metrics']
-    if 'stability' in analysis['metrics'][m]
-]
+            # Pour le rendement, volatilité, Sharpe
+            if metric in ['total_return', 'sharpe_ratio']:
+                # Idéalement ratio proche de 1 (performance similaire)
+                score = 1.0 - min(1.0, abs(ratio - 1.0))
 
-# Pondération des ratios test/train
-ratio_scores=[]
-for metric in analysis['metrics']:
-    if 'ratio' in analysis['metrics'][metric]:
-        ratio=analysis['metrics'][metric]['ratio']
+            # Pour le drawdown (négatif)
+            elif metric == 'max_drawdown':
+                # Idéalement drawdown de test pas pire que celui d'entraînement
+                score = 1.0 - min(1.0, max(0.0, ratio - 1.0))
 
-        # Pour le rendement, volatilité, Sharpe
-        if metric in ['total_return','sharpe_ratio']:
-            # Idéalement ratio proche de 1 (performance similaire)
-            score=1.0 - min (1.0,abs (ratio - 1.0))
+            # Pour d'autres métriques
+            else:
+                # Approche générique
+                score = 1.0 - min(1.0, abs(ratio - 1.0))
 
-        # Pour le drawdown (négatif)
-        elif metric == 'max_drawdown':
-            # Idéalement drawdown de test pas pire que celui d'entraînement
-            score=1.0 - min (1.0,max (0.0,ratio - 1.0))
+            ratio_scores.append(score)
 
-        # Pour d'autres métriques
-        else:
-            # Approche générique
-            score=1.0 - min (1.0,abs (ratio - 1.0))
+    # Score global
+    analysis['overall_robustness'] = (
+        np.mean(stability_scores) * 0.5 + np.mean(ratio_scores) * 0.5
+        if stability_scores and ratio_scores
+        else 0.0
+    )
 
-        ratio_scores.append (score)
-
-# Score global
-analysis['overall_robustness']=(
-    np.mean (stability_scores) * 0.5 + np.mean (ratio_scores) * 0.5
-    if stability_scores and ratio_scores
-    else 0.0
-)
-
-return analysis
+    return analysis
 
 
 def run_stress_tests (self,
